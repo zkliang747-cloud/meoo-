@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-color: #FEF9F0;
+  --text-color: #5C4B3A;
+  --text-secondary: #9B8A78;
+  --accent-color: #C6A43F;
+  --accent-light: #FEF4E8;
+  --border-color: #E2D5C8;
+  --card-bg: #FFFFFF;
+}
+
+body {
+  font-family: -apple-system, "PingFang SC", "Times New Roman", "Songti SC", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* 纸张纹理背景 */
+.paper-texture {
+  background-image: radial-gradient(#E8DDD0 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* 衬线字体标题 */
+.font-serif-title {
+  font-family: "Times New Roman", "Songti SC", serif;
+}
+
+/* 录音波形动画 */
+@keyframes wave {
+  0% { height: 10px; }
+  100% { height: 30px; }
+}
+
+.recording-wave span {
+  animation: wave 0.8s infinite ease alternate;
+}
+
+.recording-wave span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.recording-wave span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.recording-wave span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.recording-wave span:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* 按钮按压效果 */
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+/* 滚动条样式 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #efe4d8;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d9c8b2;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #b87c4f;
+}
+
+textarea {
+  font-family: inherit;
+}
+
+/* 选中文字样式 */
+::selection {
+  background: #C6A43F40;
+  color: #5C4B3A;
+}
