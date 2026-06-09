@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+    <title>留声 · 人生回忆录生成器</title>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+        body {
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+            background: #f7f5f0;
+
+            margin: 0;
+
+            padding: 20px;
+
+            color: #2c241a;
+
+        }
+
+        .container {
+
+            max-width: 700px;
+
+            margin: 0 auto;
+
+            background: white;
+
+            border-radius: 32px;
+
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+
+            overflow: hidden;
+
+            padding: 24px 20px 40px;
+
+        }
+
+        h1 {
+
+            font-size: 28px;
+
+            font-weight: 500;
+
+            margin: 0 0 6px 0;
+
+            letter-spacing: -0.3px;
+
+        }
+
+        .sub {
+
+            color: #6b5c4c;
+
+            font-size: 14px;
+
+            margin-bottom: 32px;
+
+            border-left: 3px solid #d9c8b2;
+
+            padding-left: 12px;
+
+        }
+
+        .question-panel {
+
+            background: #fefaf5;
+
+            border-radius: 24px;
+
+            padding: 20px;
+
+            margin-bottom: 24px;
+
+            border: 1px solid #efe4d8;
+
+        }
+
+        .question-text {
+
+            font-size: 20px;
+
+            font-weight: 500;
+
+            line-height: 1.4;
+
+            margin-bottom: 20px;
+
+            color: #3e2e21;
+
+        }
+
+        .progress-info {
+
+            font-size: 14px;
+
+            color: #b87c4f;
+
+            margin-bottom: 16px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: baseline;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+        }
+
+        .answer-area {
+
+            background: white;
+
+            border-radius: 20px;
+
+            border: 1px solid #e2d5c8;
+
+            padding: 16px;
+
+            margin: 16px 0;
+
+        }
+
+        .raw-text {
+
+            font-size: 15px;
+
+            color: #5a4a38;
+
+            background: #f9f6f0;
+
+            padding: 12px;
+
+            border-radius: 16px;
+
+            margin: 12px 0;
+
+            white-space: pre-wrap;
+
+            line-height: 1.5;
+
+        }
+
+        .polished-text {
+
+            background: #f0f4e8;
+
+            padding: 12px;
+
+            border-radius: 16px;
+
+            font-size: 15px;
+
+            line-height: 1.5;
+
+            color: #2c3e2f;
+
+            white-space: pre-wrap;
+
+            margin-top: 12px;
+
+        }
+
+        button {
+
+            background: #d9c8b2;
+
+            border: none;
+
+            padding: 10px 18px;
+
+            border-radius: 40px;
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            color: #2c241a;
+
+            margin-right: 8px;
+
+            margin-bottom: 8px;
+
+        }
+
+        button.primary {
+
+            background: #b87c4f;
+
+            color: white;
+
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+
+        }
+
+        button.primary:active {
+
+            background: #9b623c;
+
+        }
+
+        button.outline {
+
+            background: transparent;
+
+            border: 1px solid #d9c8b2;
+
+        }
+
+        .nav-buttons {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 24px;
+
+            gap: 12px;
+
+        }
+
+        .api-config {
+
+            background: #f3efe9;
+
+            padding: 16px;
+
+            border-radius: 24px;
+
+            margin-bottom: 24px;
+
+            font-size: 14px;
+
+        }
+
+        input, select {
+
+            width: 100%;
+
+            padding: 10px;
+
+            border-radius: 40px;
+
+            border: 1px solid #ddd2c4;
+
+            margin-top: 6px;
+
+            margin-bottom: 12px;
+
+            font-size: 14px;
+
+        }
+
+        label {
+
+            font-weight: 500;
+
+        }
+
+        .footer-buttons {
+
+            margin-top: 32px;
+
+            display: flex;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+        }
+
+        hr {
+
+            margin: 24px 0;
+
+            border: none;
+
+            border-top: 1px solid #efe4d8;
+
+        }
+
+        .status {
+
+            font-size: 13px;
+
+            color: #8b7a68;
+
+            margin-top: 12px;
+
+        }
+
+        @media (max-width: 500px) {
+
+            .container { padding: 16px; }
+
+            .question-text { font-size: 18px; }
+
+        }
+
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+
+<body>
+
+<div class="container" id="app">
+
+    <h1>📖 留声 · 回忆录</h1>
+
+    <div class="sub">你说，AI写 —— 轻轻留下一本人生之书</div>
+
+    <!-- API 设置 -->
+
+    <div class="api-config" id="apiConfig">
+
+        <label>🔑 DeepSeek API Key (或 OpenAI)</label>
+
+        <input type="password" id="apiKeyInput" placeholder="sk-..." value="">
+
+        <label>🌐 API 地址 (默认 DeepSeek)</label>
+
+        <input type="text" id="apiUrlInput" placeholder="https://api.deepseek.com/v1/chat/completions" value="https://api.deepseek.com/v1/chat/completions">
+
+        <label>📡 模型名</label>
+
+        <input type="text" id="modelInput" placeholder="deepseek-chat" value="deepseek-chat">
+
+        <button id="saveApiBtn" class="outline">保存设置</button>
+
+        <div class="status" id="apiStatus"></div>
+
+    </div>
+
+    <!-- 问题与回答区 -->
+
+    <div class="question-panel">
+
+        <div class="progress-info">
+
+            <span id="qIndex">第1 / 10题</span>
+
+            <span id="saveHint">💾 自动保存</span>
+
+        </div>
+
+        <div class="question-text" id="questionText">加载中...</div>
+
+        <div class="answer-area">
+
+            <button id="startRecordBtn" class="primary">🎙️ 开始录音</button>
+
+            <button id="stopRecordBtn" disabled>⏹️ 停止录音</button>
+
+            <button id="polishBtn" class="outline">✨ AI润色</button>
+
+            <div id="recordingStatus" class="status"></div>
+
+            <div><strong>📝 识别文字 (可编辑):</strong></div>
+
+            <textarea id="rawText" rows="4" style="width:100%; border-radius:16px; border:1px solid #e2d5c8; padding:12px; font-family:inherit; margin-top:8px;" placeholder="录音后自动出现，或手动粘贴..."></textarea>
+
+            <div><strong>✨ 润色结果 (可编辑):</strong></div>
+
+            <textarea id="polishedText" rows="6" style="width:100%; border-radius:16px; border:1px solid #d9c8b2; background:#fefaf5; padding:12px; font-family:inherit; margin-top:8px;" placeholder="点击「AI润色」后生成..."></textarea>
+
+        </div>
+
+        <div class="nav-buttons">
+
+            <button id="prevBtn" class="outline">◀ 上一题</button>
+
+            <button id="nextBtn" class="primary">下一题 ▶</button>
+
+        </div>
+
+    </div>
+
+    <div class="footer-buttons">
+
+        <button id="exportBookBtn" class="primary">📘 生成全书 PDF</button>
+
+        <button id="resetProgressBtn" class="outline">🔄 重置所有回答</button>
+
+    </div>
+
+    <hr>
+
+    <div style="font-size:12px; color:#b9aa98; text-align:center;">数据仅保存在你的浏览器，不会上传。<br>使用前请设置有效的 API Key (推荐 DeepSeek，1元可润色几百次)</div>
+
+</div>
+
+<script>
+
+    // ---------- 核心10问 ----------
+
+    const QUESTIONS = [
+
+        "你出生的时候家里什么情况？爸妈讲过你出生那天的事吗？",
+
+        "小时候最开心的一件事是什么？",
+
+        "读书时你最擅长什么？最不擅长什么？",
+
+        "你的第一份工作是什么？怎么找到的？",
+
+        "工作中你最得意的一次成就是什么？",
+
+        "你和另一半怎么认识的？第一印象是什么？",
+
+        "孩子出生那天你在想什么？",
+
+        "回头看，你这辈子做的最对的一个决定是什么？",
+
+        "你最想对子女说的一句话是什么？",
+
+        "如果用三个词总结你的人生，你会选哪三个？"
+
+    ];
+
+    const TOTAL = QUESTIONS.length;
+
+    let currentIdx = 0;          // 0-index
+
+    // 存储每个问题的 { raw, polished }
+
+    let answers = [];
+
+    // DOM 元素
+
+    const questionText = document.getElementById('questionText');
+
+    const rawTextarea = document.getElementById('rawText');
+
+    const polishedTextarea = document.getElementById('polishedText');
+
+    const prevBtn = document.getElementById('prevBtn');
+
+    const nextBtn = document.getElementById('nextBtn');
+
+    const startBtn = document.getElementById('startRecordBtn');
+
+    const stopBtn = document.getElementById('stopRecordBtn');
+
+    const polishBtn = document.getElementById('polishBtn');
+
+    const qIndexSpan = document.getElementById('qIndex');
+
+    const exportBtn = document.getElementById('exportBookBtn');
+
+    const resetBtn = document.getElementById('resetProgressBtn');
+
+    const recordingStatus = document.getElementById('recordingStatus');
+
+    // API 设置相关
+
+    const apiKeyInput = document.getElementById('apiKeyInput');
+
+    const apiUrlInput = document.getElementById('apiUrlInput');
+
+    const modelInput = document.getElementById('modelInput');
+
+    const saveApiBtn = document.getElementById('saveApiBtn');
+
+    const apiStatus = document.getElementById('apiStatus');
+
+    // 录音相关变量
+
+    let mediaRecorder = null;
+
+    let audioChunks = [];
+
+    let isRecording = false;
+
+    let speechRecognition = null;   // 使用 Web Speech API 实时转文字
+
+    // ---------- 初始化数据 ----------
+
+    function loadAnswers() {
+
+        const saved = localStorage.getItem('liu_sheng_answers');
+
+        if (saved) {
+
+            try {
+
+                const parsed = JSON.parse(saved);
+
+                if (Array.isArray(parsed) && parsed.length === TOTAL) {
+
+                    answers = parsed;
+
+                } else {
+
+                    initEmptyAnswers();
+
+                }
+
+            } catch(e) { initEmptyAnswers(); }
+
+        } else {
+
+            initEmptyAnswers();
+
+        }
+
+    }
+
+    function initEmptyAnswers() {
+
+        answers = [];
+
+        for (let i = 0; i < TOTAL; i++) {
+
+            answers.push({ raw: "", polished: "" });
+
+        }
+
+    }
+
+    function saveAnswersToLocal() {
+
+        localStorage.setItem('liu_sheng_answers', JSON.stringify(answers));
+
+    }
+
+    function loadCurrentToUI() {
+
+        const ans = answers[currentIdx];
+
+        rawTextarea.value = ans.raw || "";
+
+        polishedTextarea.value = ans.polished || "";
+
+        questionText.innerText = QUESTIONS[currentIdx];
+
+        qIndexSpan.innerText = `第${currentIdx+1} / ${TOTAL}题`;
+
+    }
+
+    function saveCurrentFromUI() {
+
+        answers[currentIdx].raw = rawTextarea.value;
+
+        answers[currentIdx].polished = polishedTextarea.value;
+
+        saveAnswersToLocal();
+
+    }
+
+    // 切换题目
+
+    function goPrev() {
+
+        saveCurrentFromUI();
+
+        if (currentIdx > 0) {
+
+            currentIdx--;
+
+            loadCurrentToUI();
+
+        }
+
+    }
+
+    function goNext() {
+
+        saveCurrentFromUI();
+
+        if (currentIdx < TOTAL-1) {
+
+            currentIdx++;
+
+            loadCurrentToUI();
+
+        } else {
+
+            alert("已完成全部10问！你可以点击「生成全书PDF」。");
+
+        }
+
+    }
+
+    // ---------- 语音识别 (Web Speech API) ----------
+
+    function initSpeechRecognition() {
+
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+
+            recordingStatus.innerText = "⚠️ 浏览器不支持语音识别，请使用Chrome/Edge。";
+
+            return null;
+
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        const recognition = new SpeechRecognition();
+
+        recognition.continuous = true;   // 持续识别
+
+        recognition.interimResults = true; // 临时结果
+
+        recognition.lang = 'zh-CN';
+
+        return recognition;
+
+    }
+
+    let currentRecognition = null;
+
+    function startRecording() {
+
+        if (currentRecognition) {
+
+            stopRecording();
+
+        }
+
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+
+            alert("您的浏览器不支持语音识别，请使用Chrome/Edge。");
+
+            return;
+
+        }
+
+        const recognition = initSpeechRecognition();
+
+        if (!recognition) return;
+
+        currentRecognition = recognition;
+
+        let finalTranscript = '';
+
+        recognition.onresult = (event) => {
+
+            let interimTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+
+                const transcript = event.results[i][0].transcript;
+
+                if (event.results[i].isFinal) {
+
+                    finalTranscript += transcript;
+
+                } else {
+
+                    interimTranscript += transcript;
+
+                }
+
+            }
+
+            // 实时显示最终+临时
+
+            const currentRaw = rawTextarea.value;
+
+            // 策略：每次追加新的 final 部分（简单实现：每次更新整个文本，需要避免重复）
+
+            // 为了防止重复，我们只在识别结束后一次性处理？更好的体验：使用一个累积变量。
+
+            // 但简单做法：每次final更新后，将finalTranscript 追加到 textarea
+
+            if (finalTranscript) {
+
+                // 避免重复追加，我们维护一个全局最后识别文本，这里简化：直接替换掉原有内容? 不好。
+
+                // 更稳健: 先保存原有内容，如果新内容非空，则添加换行后合并。
+
+                let old = rawTextarea.value;
+
+                if (old && !old.endsWith(finalTranscript)) {
+
+                    rawTextarea.value = old + (old ? "\n" : "") + finalTranscript;
+
+                } else if (!old) {
+
+                    rawTextarea.value = finalTranscript;
+
+                }
+
+                finalTranscript = ''; // 重置，避免重复追加
+
+            }
+
+            if (interimTranscript) {
+
+                recordingStatus.innerText = `🎤 识别中: ${interimTranscript}`;
+
+            } else {
+
+                recordingStatus.innerText = "🎙️ 录音中...";
+
+            }
+
+        };
+
+        recognition.onerror = (event) => {
+
+            console.error("识别错误", event);
+
+            recordingStatus.innerText = "❌ 语音识别出错，请重试。";
+
+            stopRecording();
+
+        };
+
+        recognition.onend = () => {
+
+            recordingStatus.innerText = "⏸️ 录音结束，可编辑文字。";
+
+            isRecording = false;
+
+            startBtn.disabled = false;
+
+            stopBtn.disabled = true;
+
+            currentRecognition = null;
+
+        };
+
+        recognition.start();
+
+        isRecording = true;
+
+        startBtn.disabled = true;
+
+        stopBtn.disabled = false;
+
+        recordingStatus.innerText = "🎤 录音中，请说话...";
+
+    }
+
+    function stopRecording() {
+
+        if (currentRecognition) {
+
+            currentRecognition.stop();
+
+            currentRecognition = null;
+
+        }
+
+        isRecording = false;
+
+        startBtn.disabled = false;
+
+        stopBtn.disabled = true;
+
+        recordingStatus.innerText = "已停止录音，你可以修改文字。";
+
+    }
+
+    // ---------- AI 润色 (调用 DeepSeek / OpenAI) ----------
+
+    async function callPolishAPI(rawText) {
+
+        const apiKey = apiKeyInput.value.trim();
+
+        if (!apiKey) {
+
+            throw new Error("请先设置 API Key（在顶部配置）");
+
+        }
+
+        const apiUrl = apiUrlInput.value.trim() || "https://api.deepseek.com/v1/chat/completions";
+
+        const model = modelInput.value.trim() || "deepseek-chat";
+
+        const systemPrompt = `你是一位温暖而克制的文字编辑。任务：把用户口述的人生回忆整理成优美但不失真的文字。
+
+原则：
+
+1. 忠于原意：不添加用户没说过的内容。
+
+2. 保留口吻：适当保留口语风格。
+
+3. 只做语法修正、语序理顺、删除口头禅重复词。
+
+4. 不要过度煽情，不用感叹号。
+
+5. 段落清晰，每段3-5句。
+
+6. 如果原文有特别生动的原话，可以保留并用引号标出一处，但不是必须。
+
+输出直接是润色后的文本。`;
+
+        const userPrompt = `请润色以下口述内容：\n${rawText}`;
+
+        const response = await fetch(apiUrl, {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type': 'application/json',
+
+                'Authorization': `Bearer ${apiKey}`
+
+            },
+
+            body: JSON.stringify({
+
+                model: model,
+
+                messages: [
+
+                    { role: "system", content: systemPrompt },
+
+                    { role: "user", content: userPrompt }
+
+                ],
+
+                temperature: 0.7,
+
+                max_tokens: 1000
+
+            })
+
+        });
+
+        if (!response.ok) {
+
+            const errText = await response.text();
+
+            throw new Error(`API 错误 ${response.status}: ${errText}`);
+
+        }
+
+        const data = await response.json();
+
+        const polished = data.choices[0].message.content;
+
+        return polished.trim();
+
+    }
+
+    async function onPolish() {
+
+        const raw = rawTextarea.value.trim();
+
+        if (!raw) {
+
+            alert("请先录音或输入文字");
+
+            return;
+
+        }
+
+        if (!apiKeyInput.value.trim()) {
+
+            alert("请在顶部填写 DeepSeek API Key（可去 platform.deepseek.com 免费获取）");
+
+            return;
+
+        }
+
+        polishedTextarea.value = "🤖 AI 润色中，请稍候...";
+
+        try {
+
+            const polished = await callPolishAPI(raw);
+
+            polishedTextarea.value = polished;
+
+            // 自动保存
+
+            saveCurrentFromUI();
+
+        } catch (err) {
+
+            console.error(err);
+
+            alert("润色失败：" + err.message);
+
+            polishedTextarea.value = "";
+
+        }
+
+    }
+
+    // ---------- 导出 PDF ----------
+
+    function exportToPDF() {
+
+        saveCurrentFromUI();
+
+        // 收集所有已回答的问题（只要 polish 或 raw 非空视为有内容）
+
+        let contentHtml = `<div style="font-family: 'Times New Roman', SimSun, serif; padding: 20px; max-width: 800px; margin:0 auto;">
+
+            <h1 style="text-align:center;">📖 我的人生回忆录</h1>
+
+            <p style="text-align:center; color:gray;">生成于 ${new Date().toLocaleDateString()}</p>
+
+            <hr/>`;
+
+        for (let i = 0; i < TOTAL; i++) {
+
+            const q = QUESTIONS[i];
+
+            const polished = answers[i].polished;
+
+            const raw = answers[i].raw;
+
+            const finalText = polished || raw || "（未回答）";
+
+            contentHtml += `
+
+                <div style="margin-bottom: 32px; page-break-inside: avoid;">
+
+                    <h3>${i+1}. ${q}</h3>
+
+                    <div style="font-size:16px; line-height:1.5; margin-left:12px;">${finalText.replace(/\n/g, '<br/>')}</div>
+
+                </div>
+
+            `;
+
+        }
+
+        contentHtml += `</div>`;
+
+        const tempDiv = document.createElement('div');
+
+        tempDiv.innerHTML = contentHtml;
+
+        document.body.appendChild(tempDiv);
+
+        const opt = {
+
+            margin:        [0.5, 0.5, 0.5, 0.5],
+
+            filename:     `留声回忆录_${Date.now()}.pdf`,
+
+            image:        { type: 'jpeg', quality: 0.98 },
+
+            html2canvas:  { scale: 2, letterRendering: true },
+
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+
+        };
+
+        html2pdf().set(opt).from(tempDiv).save().then(() => {
+
+            document.body.removeChild(tempDiv);
+
+        }).catch(err => {
+
+            document.body.removeChild(tempDiv);
+
+            alert("生成PDF失败，可尝试打印保存为PDF：" + err);
+
+        });
+
+    }
+
+    function resetAll() {
+
+        if (confirm("⚠️ 重置会删除所有已填写的回答，确定吗？")) {
+
+            initEmptyAnswers();
+
+            saveAnswersToLocal();
+
+            loadCurrentToUI();
+
+            alert("已重置所有回答");
+
+        }
+
+    }
+
+    // 保存 API 设置到 localStorage
+
+    function saveApiSettings() {
+
+        const settings = {
+
+            apiKey: apiKeyInput.value,
+
+            apiUrl: apiUrlInput.value,
+
+            model: modelInput.value
+
+        };
+
+        localStorage.setItem('liu_sheng_api', JSON.stringify(settings));
+
+        apiStatus.innerText = "✅ API 设置已保存";
+
+        setTimeout(() => { apiStatus.innerText = ""; }, 2000);
+
+    }
+
+    function loadApiSettings() {
+
+        const saved = localStorage.getItem('liu_sheng_api');
+
+        if (saved) {
+
+            try {
+
+                const s = JSON.parse(saved);
+
+                apiKeyInput.value = s.apiKey || "";
+
+                apiUrlInput.value = s.apiUrl || "https://api.deepseek.com/v1/chat/completions";
+
+                modelInput.value = s.model || "deepseek-chat";
+
+                apiStatus.innerText = "已加载保存的 API 设置";
+
+            } catch(e) {}
+
+        }
+
+    }
+
+    // ---------- 事件绑定 ----------
+
+    startBtn.addEventListener('click', startRecording);
+
+    stopBtn.addEventListener('click', stopRecording);
+
+    polishBtn.addEventListener('click', onPolish);
+
+    prevBtn.addEventListener('click', goPrev);
+
+    nextBtn.addEventListener('click', goNext);
+
+    exportBtn.addEventListener('click', exportToPDF);
+
+    resetBtn.addEventListener('click', resetAll);
+
+    saveApiBtn.addEventListener('click', saveApiSettings);
+
+    // 自动保存编辑内容
+
+    rawTextarea.addEventListener('input', saveCurrentFromUI);
+
+    polishedTextarea.addEventListener('input', saveCurrentFromUI);
+
+    // 初始化
+
+    loadApiSettings();
+
+    loadAnswers();
+
+    loadCurrentToUI();
+
+    // 页面关闭前保存一次
+
+    window.addEventListener('beforeunload', () => {
+
+        saveCurrentFromUI();
+
+    });
+
+</script>
+
+</body>
+
+</html>
